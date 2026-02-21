@@ -59,13 +59,13 @@ Crear un producto POST:
 ```bash
 curl -s -X POST http://localhost:3000/api/products \
   -H "Content-Type: application/json" \
-  -d '{"nombre":"Teléfono","precio":199.99,"categoria":"electronica","stock":10}' | jq
+  -d '{"nombre":"Teléfono","precio":199.99,"categoria":"electronica","stock":10}'
 ```
 
 Obtener productos (GET):
 
 ```bash
-curl -s http://localhost:3000/api/products | jq
+curl -s http://localhost:3000/api/products
 ```
 
 Observen los logs de la consola asi sabran que pasa
