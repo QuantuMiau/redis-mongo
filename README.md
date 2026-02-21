@@ -6,7 +6,7 @@ Proyecto de respaldo por si hay therians en el salon www
 
 - `server.js` — entrypoint de la app
 - `config/` — configuración de `mongodb` y `redis`
-- `controllers/productController.js` — lógica mínima para GET/POST
+- `controllers/productController.js` — lógica para GET/POST
 - `routes/products.js` — rutas
 - `docker-compose.yml` — levanta MongoDB y Redis
 - `.env` — variables de entorno que ya estan configuradas
