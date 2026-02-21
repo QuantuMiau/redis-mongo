@@ -1,4 +1,4 @@
-# redis-mongo — API mínima con Redis + MongoDB (Docker)
+# redis-mongo — API con Redis + MongoDB con docker
 
 Proyecto de respaldo por si hay therians en el salon www
 
