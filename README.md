@@ -94,3 +94,105 @@ si ya tienen el su redis aparte o su db
 1. Actualizar `.env` URI/host/puerto que tengan ustedes.
 2. Ejecutar `npm install` y `npm start`.
 3. finish www
+
+## Pruebas JSON
+
+1. Crear producto — POST /api/products
+
+Request body:
+
+```json
+{
+  "nombre": "Teléfono Modelo X",
+  "precio": 299.99,
+  "categoria": "electronica",
+  "stock": 25
+}
+```
+
+Respuesta (201):
+
+```json
+{
+  "success": true,
+  "product": {
+    "_id": "<ID>",
+    "nombre": "Teléfono Modelo X",
+    "precio": 299.99,
+    "categoria": "electronica",
+    "stock": 25,
+    "createdAt": "2026-02-20T10:00:00.000Z",
+    "updatedAt": "2026-02-20T10:00:00.000Z",
+    "__v": 0
+  }
+}
+```
+
+2. Obtener todos — GET /api/products
+
+Respuesta (200):
+
+```json
+{
+  "success": true,
+  "products": [
+    {
+      "_id": "<ID>",
+      "nombre": "Teléfono Modelo X",
+      "precio": 299.99,
+      "categoria": "electronica",
+      "stock": 25,
+      "createdAt": "2026-02-20T10:00:00.000Z",
+      "updatedAt": "2026-02-20T10:00:00.000Z",
+      "__v": 0
+    }
+  ]
+}
+```
+
+3. Obtener por id — GET /api/products/:id
+
+Respuesta exitosa (200):
+
+```json
+{
+  "success": true,
+  "product": {
+    "_id": "<ID>",
+    "nombre": "Teléfono Modelo X",
+    "precio": 299.99,
+    "categoria": "electronica",
+    "stock": 25,
+    "createdAt": "2026-02-20T10:00:00.000Z",
+    "updatedAt": "2026-02-20T10:00:00.000Z",
+    "__v": 0
+  },
+  "source": "mongo"
+}
+```
+
+Si viene de Redis (cache por id), la respuesta incluirá `"source": "redis"` o `"source":
+
+4. Actualizar producto — PUT /api/products/:id
+
+Body
+
+```json
+{
+  "precio": 249.99,
+  "stock": 30
+}
+```
+
+Respuesta (200):
+
+5. Eliminar producto — DELETE /api/products/:id
+
+Respuesta (200):
+
+```json
+{
+  "success": true,
+  "message": "Producto eliminado"
+}
+```
