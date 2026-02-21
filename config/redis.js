@@ -1,83 +1,68 @@
-const { createClient, ReconnectStrategyError } = require("redis");
+const { createClient } = require("redis");
 
-// Opciones de conexión para Redis con reconexión automática y manejo de errores
-const redisOptions = {
-  socket: {
-    host: process.env.REDIS_HOST || "localhost",
-    port: process.env.REDIS_PORT || 6379,
-    ReconnectStrategy: (retries) => {
-      if (retries > 10) {
-        console.log("Numero maximo de intentos de reconexion a redis");
-        return new Error("Maximo numero de reintentos alcanzado");
-      }
-      return Math.min(retries * 50, 500);
-    },
-  },
-};
+// Construimos URL si hay password/username, de lo contrario usamos host/port
+const REDIS_HOST = process.env.REDIS_HOST || "localhost";
+const REDIS_PORT = process.env.REDIS_PORT || 6379;
+const REDIS_PASSWORD = process.env.REDIS_PASSWORD || "";
 
-if (process.env.REDIS_USERNAME) {
-  redisOptions.password = process.env.REDIS_PASSWORD;
+let redisClient;
+if (REDIS_PASSWORD) {
+  redisClient = createClient({
+    url: `redis://:${REDIS_PASSWORD}@${REDIS_HOST}:${REDIS_PORT}`,
+  });
+} else {
+  redisClient = createClient({
+    socket: { host: REDIS_HOST, port: REDIS_PORT },
+  });
 }
 
-// crear cliente de redis con las opciones configuradas
-const redisClient = createClient(redisOptions);
-
-// manejo de evento cuando se conecta aredis
+// eventos
 redisClient.on("connect", () => {
-  const host = process.env.REDIS_HOST || "localhost";
-  const port = process.env.REDIS_PORT || 6379;
   const isCloud =
-    host.includes("cloud.redislabs.com") || host.includes("redis");
+    REDIS_HOST.includes("cloud.redislabs.com") || REDIS_HOST.includes("redis");
   const location = isCloud ? "☁️ en la nube" : "🎈 local";
-
-  console.log(`🐸 Conexion a redis exitosa ${location}`);
-  console.log(`Host: ${host}:${port}`);
+  console.log(
+    `🐸 Conexión a Redis exitosa ${location} (${REDIS_HOST}:${REDIS_PORT})`,
+  );
 });
 
 redisClient.on("error", (err) => {
-  console.log("😑 error en el redis", err.message);
-
-  // segurir soluciones segun el tipo de error
+  console.error("⚠️ error en Redis:", err.message);
   if (err.message.includes("ECONNREFUSED")) {
     console.error(
-      "🦭 verifica que redis este corriendo o que las credenciales sean correctas",
+      "Verifica que Redis esté corriendo o que las credenciales sean correctas.",
     );
   } else if (
     err.message.includes("WRONGPASS") ||
-    err.message.includes("ERR invalidad password")
+    err.message.includes("invalid password")
   ) {
     console.error(
-      "🦭 Contrasena a Redis incorrecta, verifica REDIS_PASSWORD .env",
+      "Contraseña de Redis incorrecta, verifica REDIS_PASSWORD en .env",
     );
   } else if (err.message.includes("ENOTFOUND")) {
-    console.error("🦭 Host de redis no encontrado, verifica REDIS_HOST .env");
+    console.error("Host de Redis no encontrado, verifica REDIS_HOST en .env");
   }
 });
 
-// manejo de eventos de reconexion
-
 redisClient.on("reconnecting", () => {
-  const host = process.env.REDIS_HOST || "localhost";
-  const isCloud = host.includes("cloud.redislab.com") || host.includes("redis");
-  const location = isCloud ? "☁️ en la nube" : "🎈 local";
-
-  console.log(`🔃 Intentando reconectar a Redis ${location}....`);
+  console.log("🔃 Intentando reconectar a Redis...");
 });
 
 const connectRedis = async () => {
   try {
     await redisClient.connect();
-    console.log("🐸 cliente redis conectado");
+    console.log("✅ cliente redis conectado");
     return true;
   } catch (error) {
-    console.err("😑 error conectando a redis", error.message);
+    console.error("❌ error conectando a redis:", error.message);
+    throw error;
   }
 };
 
 const disconnectRedis = async () => {
   try {
     await redisClient.disconnect();
-    console.log("Cliente Redis desconectado");
+    console.log("🔌 cliente redis desconectado");
   } catch (error) {
     console.error("Error desconectando a redis", error.message);
   }

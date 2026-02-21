@@ -1,20 +1,19 @@
-import { connect } from "mongoose";
-// conecta a mongo db a la uri especificada
+const mongoose = require("mongoose");
 
+// conecta a mongo db a la uri especificada
 const connectMongoDb = async () => {
   try {
     const mongoUri =
       process.env.MONGODB_URI || "mongodb://localhost:27017/tienda";
 
-    await connect(mongoUri, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
+    await mongoose.connect(mongoUri, {
+      // mongoose v6+ no necesita estas opciones, pero las dejamos por compatibilidad
     });
 
-    console.log("conexio exitosa a mongoDB");
+    console.log("✅ conexión exitosa a mongoDB");
     return true;
   } catch (error) {
-    console.log("Error al conectar con mongoDb: " + error.message);
+    console.error("❌ Error al conectar con mongoDb:", error.message);
     process.exit(1);
   }
 };
@@ -22,9 +21,9 @@ const connectMongoDb = async () => {
 const disconnectMongoDB = async () => {
   try {
     await mongoose.disconnect();
-    console.log("desconectado de mongoDB");
+    console.log("🔌 desconectado de mongoDB");
   } catch (error) {
-    console.log("Error al desconectar de mongoDB: " + error.message);
+    console.error("Error al desconectar de mongoDB:", error.message);
   }
 };
 

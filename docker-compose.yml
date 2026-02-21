@@ -1,0 +1,21 @@
+version: "3.8"
+services:
+  mongodb:
+    image: mongo:6
+    container_name: redis_mongo_mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  redis:
+    image: redis:7
+    container_name: redis_mongo_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    command: ["redis-server", "--save", "60", "1"]
+
+volumes:
+  mongo_data:
